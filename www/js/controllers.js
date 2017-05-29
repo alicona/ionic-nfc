@@ -1,56 +1,53 @@
 angular.module('starter.controllers', [])
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
+.controller('AppCtrl', function() {
 
-  // With the new view caching in Ionic, Controllers are only called
-  // when they are recreated or on app start, instead of every page change.
-  // To listen for when this page is active (for example, to refresh data),
-  // listen for the $ionicView.enter event:
-  //$scope.$on('$ionicView.enter', function(e) {
-  //});
-
-  // Form data for the login modal
-  $scope.loginData = {};
-
-  // Create the login modal that we will use later
-  $ionicModal.fromTemplateUrl('templates/login.html', {
-    scope: $scope
-  }).then(function(modal) {
-    $scope.modal = modal;
-  });
-
-  // Triggered in the login modal to close it
-  $scope.closeLogin = function() {
-    $scope.modal.hide();
-  };
-
-  // Open the login modal
-  $scope.login = function() {
-    $scope.modal.show();
-  };
-
-  // Perform the login action when the user submits the login form
-  $scope.doLogin = function() {
-    console.log('Doing login', $scope.loginData);
-
-    // Simulate a login delay. Remove this and replace with your login
-    // code if using a login system
-    $timeout(function() {
-      $scope.closeLogin();
-    }, 1000);
-  };
 })
 
-.controller('PlaylistsCtrl', function($scope) {
-  $scope.playlists = [
-    { title: 'Reggae', id: 1 },
-    { title: 'Chill', id: 2 },
-    { title: 'Dubstep', id: 3 },
-    { title: 'Indie', id: 4 },
-    { title: 'Rap', id: 5 },
-    { title: 'Cowbell', id: 6 }
-  ];
-})
 
-.controller('PlaylistCtrl', function($scope, $stateParams) {
+.controller('NfcController', function ($scope, $cordovaNfc, $cordovaNfcUtil) {
+    $scope.textToWrite;
+    var nfc,
+        nfcUtil;
+  $scope.writeTag = function (text) {
+    console.log(text);
+    var message = [
+      ndef.textRecord(text)
+    ];
+    nfc.write(message).then(function (success) {console.log("DONE!: ", success); }, function(error){console.log("ERROR: ", error);});
+    
+  }
+
+  $cordovaNfc.then(function(nfcInstance){
+      nfc = nfcInstance;
+        //Use the plugins interface as you go, in a more "angular" way
+      nfcInstance.addNdefListener(function(event){
+            //Callback when ndef got triggered
+           
+            var tag =  event.tag,
+                ndefMessage = tag.ndefMessage
+
+            $cordovaNfcUtil.then(function(nfcUtil){
+              console.log("Your Message: ");
+              // console.log( nfcUtil.bytesToString(ndefMessage[0].payload).substring(3) );
+              var text = nfcUtil.bytesToString(ndefMessage[0].payload).substring(3);
+              $scope.textRead = text;
+            }); 
+
+      })
+      .then(
+        //Success callback
+        function(event){
+            console.log("bound success");
+        },
+        //Fail callback
+        function(err){
+            console.log("error");
+        });
+
+        $cordovaNfcUtil.then(function(nfcUtil){
+
+          console.log( nfcUtil.bytesToString("some bytes") )
+        });   
+   });
 });

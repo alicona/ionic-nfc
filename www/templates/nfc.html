@@ -1,0 +1,16 @@
+<ion-view view-title="NFC R/W">
+  <ion-content>
+    <div class="list">
+        <label class="item item-input">
+          <span class="input-label">Text to write</span>
+          <input type="text" ng-model="textToWrite">
+        </label>
+        <label class="item">
+          <button class="button button-block button-positive"  ng-click="writeTag(textToWrite)">Write TAG</button>
+        </label>
+    </div>
+    <div class="list">
+        <p>Read From TAG: {{ textRead }}</p>
+    </div>
+  </ion-content>
+</ion-view>
